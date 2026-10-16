@@ -1,21 +1,37 @@
 <!doctype html>
+{% load static %}
 <html lang="es">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blog del laboratorio</title>
+  <link rel="stylesheet" href="{% static 'blog/front.css' %}">
 </head>
 <body>
-  <h1>Artículos publicados</h1>
+  <header class="hero">
+    <h1>📰 Blog del laboratorio</h1>
+    <p>Artículos publicados · ORM de Django</p>
+  </header>
+  <main class="grid">
   {% for post in posts %}
-    <article>
-      <h2>{{ post.title }}</h2>
-      <p>Por {{ post.author.name }} · {{ post.published_at|date:"d/m/Y" }}</p>
-      <p>
-        {% for tag in post.tags.all %}<span>#{{ tag.name }}</span>{% empty %}<em>sin etiquetas</em>{% endfor %}
-      </p>
+    <article class="card">
+      {% with pid=post.id|stringformat:"s" %}
+      {% with cover='blog/covers/'|add:pid|add:'.jpg' %}
+      {% static cover as cover_url %}
+      <img src="{{ cover_url }}" alt="Portada de {{ post.title }}" loading="lazy">
+      {% endwith %}
+      {% endwith %}
+      <div class="card-body">
+        <h2>{{ post.title }}</h2>
+        <p class="meta">Por {{ post.author.name }} · {{ post.published_at|date:"d/m/Y" }}</p>
+        <p class="tags">
+          {% for tag in post.tags.all %}<span>#{{ tag.name }}</span>{% empty %}<em>sin etiquetas</em>{% endfor %}
+        </p>
+      </div>
     </article>
   {% empty %}
     <p>No hay artículos publicados.</p>
   {% endfor %}
+  </main>
 </body>
 </html>
